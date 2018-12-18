@@ -16,38 +16,51 @@ const sudokuClass = style({
   gridGap: 3
 });
 
-const redClass = style({ color: 'red' });
+const redClass = style({ color: "red" });
 
-export type CellData = CellDetails[];
+export type FieldData = CellDetails[];
 
 interface CellDetails {
   value?: number;
   initialValue?: boolean;
 }
 
-function renderSudoku(cellData: CellData) {
-  const rawData = cellData.map(d => d.value);
+function renderSudoku(fieldData: FieldData) {
+  const rawData = fieldData.map(d => d.value);
   const cells = new Array(81).fill(undefined).map((_, idx) => {
-    const cellValue = cellData[idx].value;
-    let cssClass = `.${cellClass}`;
-    if(cellValue && !isValidNumber(cellValue, idx % 9, Math.floor(idx/9), rawData)){
-      cssClass += ` .${redClass}`;
-    };
+    const cell = fieldData[idx];
 
-    return div(cssClass, [span(cellValue)]);
+    let cssClass = `.${cellClass}`;
+    if (!cell.initialValue && cell.value && !isValidNumber(cell.value, idx, rawData)) {
+      cssClass += ` .${redClass}`;
+    }
+
+    return div(cssClass, [span(cell.value)]);
   });
   return div(`.${sudokuClass}`, cells);
 }
 
-function createRandomSudokuData(): CellData {
-  const cells = [...Array(81)].fill(undefined).map(() => {
-    const value = Math.round(Math.random() * 35) + 1;
+function createRandomSudokuData(): FieldData {
+  const cells = [...Array(81)].fill(undefined);
+  let prefills = 10;
+  while (prefills > 0) {
+    const value = Math.ceil(Math.random() * 9);
+    const randomIndex = Math.floor(Math.random() * 81);
+    if (
+      cells[randomIndex] === undefined &&
+      isValidNumber(value, randomIndex, cells)
+    ) {
+      cells[randomIndex] = value;
+      prefills--;
+    }
+  }
+
+  return cells.map(value => {
     return {
-      value: value <= 9 ? value : undefined,
+      value,
       initialValue: true
     };
   });
-  return cells;
 }
 
 interface Sources {
@@ -55,10 +68,13 @@ interface Sources {
 }
 
 export const App = (sources: Sources) => {
-  const vdom$ = sources.DOM.events("click").map(() => {
-    const cellData: CellData = createRandomSudokuData();
-    return renderSudoku(cellData);
-  });
+  const vdom$ = sources.DOM.events("click")
+    .mapTo(1)
+    .startWith(1)
+    .map(() => {
+      const cellData: FieldData = createRandomSudokuData();
+      return renderSudoku(cellData);
+    });
 
   return {
     DOM: vdom$
