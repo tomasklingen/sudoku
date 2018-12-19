@@ -1,25 +1,41 @@
-// standard sudoku
+import { FieldData } from "./datatypes";
 
-type FieldData = (number | undefined)[];
+// standard 9*9 sudoku grid
 
-export function isValidNumber(value: number, index: number, field: FieldData) {
+type Position = { row: number; col: number };
+
+export const isValidValue = (
+  value: number,
+  index: number,
+  field: FieldData
+) => {
   const pos = indexToPosition(index);
 
-  // same value in row?
-  const rowRange = getRowRangeFromField(pos.row, field);
-  if (rowRange.includes(value)) {
-    return false;
-  }
+  return !(
+    valueExistsInSameRow(value, pos.row, field) &&
+    valueExistsInSameCol(value, pos.col, field) &&
+    valueExistsInSameRegion(value, pos, field)
+  );
+};
 
-  // same value in col?
-  const colRange = getColRangeFromField(pos.col, field);
-  if (colRange.includes(value)) {
-    return false;
-  }
+const valueExistsInSameRegion = (
+  value: number,
+  pos: Position,
+  field: FieldData
+) => {
+  // const regionRange = getRangeFromSubGrid(pos, field);
+  return false;
+};
 
-  // neighbourhood
-  return true;
-}
+const valueExistsInSameRow = (value: number, row: number, field: FieldData) => {
+  const rowRange = getRowRangeFromField(row, field);
+  return rowRange.includes(value);
+};
+
+const valueExistsInSameCol = (value: number, col: number, field: FieldData) => {
+  const colRange = getColRangeFromField(col, field);
+  return colRange.includes(value);
+};
 
 const getRowRangeFromField = (row: number, field: FieldData) => {
   return field.filter((_, idx) => row === indexToPosition(idx).row);
@@ -29,7 +45,7 @@ const getColRangeFromField = (col: number, field: FieldData) => {
   return field.filter((_, idx) => col === indexToPosition(idx).col);
 };
 
-const indexToPosition = (index: number) => ({
+const indexToPosition = (index: number): Position => ({
   row: Math.floor(index / 9),
   col: index % 9
 });
