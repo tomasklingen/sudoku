@@ -1,8 +1,6 @@
-export type Grid = CellDetails[];
-
 export interface CellDetails {
   value?: number;
-  initialValue: boolean;
+  isInitialValue: boolean;
   isValid: boolean;
 }
 

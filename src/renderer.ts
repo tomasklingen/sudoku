@@ -1,8 +1,8 @@
 import { div, span, VNode } from "@cycle/dom";
 import { style, cssRule } from "typestyle";
-import { CellDetails, Grid } from "./datatypes";
+import { CellDetails } from "./datatypes";
 
-export const renderSudoku = (fieldData: Grid): VNode => {
+export const renderSudoku = (fieldData: CellDetails[]): VNode => {
   const cellNodes = fieldData.map(renderGridCell);
 
   return div(`.${sudokuClass}`, cellNodes);
@@ -10,7 +10,7 @@ export const renderSudoku = (fieldData: Grid): VNode => {
 
 const renderGridCell = (cell: CellDetails): VNode => {
   let cssClass = `.${cellClass}`;
-  if (!cell.initialValue && cell.value && !cell.isValid) {
+  if (cell.value && !cell.isValid) {
     cssClass += ` .${redClass}`;
   }
 

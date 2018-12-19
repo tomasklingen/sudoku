@@ -1,6 +1,6 @@
 import { DOMSource } from "@cycle/dom";
 import { renderSudoku } from "./renderer";
-import { createRandomSudokuData } from "./sudoku";
+import { createSudokuGrid } from "./sudoku";
 
 interface Sources {
   DOM: DOMSource;
@@ -11,8 +11,8 @@ export const App = (sources: Sources) => {
     .mapTo(1)
     .startWith(1)
     .map(() => {
-      const cellData = createRandomSudokuData(10);
-      return renderSudoku(cellData);
+      const grid = createSudokuGrid(10);
+      return renderSudoku(grid);
     });
 
   return {

@@ -1,10 +1,14 @@
-import { FieldData, Grid } from "./datatypes";
+import { FieldData, CellDetails } from "./datatypes";
 import { isValidValue } from "./validation";
 
-export function createRandomSudokuData(prefills: number): Grid {
+/**
+ * Creates a Sudoku grid object.
+ * @param numPrefilledCells Number of random cells to be randomly generated and filled.
+ */
+export const createSudokuGrid = (numPrefilledCells = 0): CellDetails[] => {
   const cells: FieldData = [...Array(81)].fill(undefined);
 
-  while (prefills > 0) {
+  while (numPrefilledCells > 0) {
     const value = Math.ceil(Math.random() * 9);
     const randomIndex = Math.floor(Math.random() * 81);
 
@@ -13,15 +17,15 @@ export function createRandomSudokuData(prefills: number): Grid {
       isValidValue(value, randomIndex, cells)
     ) {
       cells[randomIndex] = value;
-      prefills--;
+      numPrefilledCells--;
     }
   }
 
   return cells.map(value => {
     return {
       value,
-      initialValue: true,
-      isValid: false
-    };
+      isInitialValue: true,
+      isValid: true
+    } as CellDetails;
   });
-}
+};
