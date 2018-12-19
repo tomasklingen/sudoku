@@ -1,10 +1,10 @@
 import { DOMSource } from "@cycle/dom";
-import { Grid, CellDetails } from "./datatypes";
+import { FieldData, Grid } from "./datatypes";
 import { renderSudoku } from "./renderer";
 import { isValidValue } from "./validation";
 
 function createRandomSudokuData(prefills: number): Grid {
-  const cells = [...Array(81)].fill(undefined);
+  const cells: FieldData = [...Array(81)].fill(undefined);
 
   while (prefills > 0) {
     const value = Math.ceil(Math.random() * 9);
@@ -23,8 +23,8 @@ function createRandomSudokuData(prefills: number): Grid {
     return {
       value,
       initialValue: true,
-      isWrong: false
-    } as CellDetails;
+      isValid: false
+    };
   });
 }
 
