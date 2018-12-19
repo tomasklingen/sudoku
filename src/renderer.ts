@@ -1,5 +1,5 @@
 import { div, span, VNode } from "@cycle/dom";
-import { style } from "typestyle";
+import { style, cssRule } from "typestyle";
 import { CellDetails, Grid } from "./datatypes";
 
 export const renderSudoku = (fieldData: Grid): VNode => {
@@ -7,6 +7,17 @@ export const renderSudoku = (fieldData: Grid): VNode => {
 
   return div(`.${sudokuClass}`, cellNodes);
 };
+
+const renderGridCell = (cell: CellDetails): VNode => {
+  let cssClass = `.${cellClass}`;
+  if (!cell.initialValue && cell.value && !cell.isValid) {
+    cssClass += ` .${redClass}`;
+  }
+
+  return div(cssClass, [span(cell.value)]);
+};
+
+/* CSS */
 
 const cellClass = style({
   border: "1px solid",
@@ -24,11 +35,7 @@ const sudokuClass = style({
 
 const redClass = style({ color: "red" });
 
-const renderGridCell = (cell: CellDetails): VNode => {
-  let cssClass = `.${cellClass}`;
-  if (!cell.initialValue && cell.value && !cell.isValid) {
-    cssClass += ` .${redClass}`;
-  }
-
-  return div(cssClass, [span(cell.value)]);
-};
+cssRule("#app", {
+  display: 'flex',
+  justifyContent: 'center'
+});
