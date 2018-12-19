@@ -1,7 +1,6 @@
 import { div, span, VNode } from "@cycle/dom";
-import { isValidValue } from "./validation";
-import { Grid, CellDetails, FieldData } from "./datatypes";
 import { style } from "typestyle";
+import { CellDetails, Grid } from "./datatypes";
 
 const cellClass = style({
   border: "1px solid",
@@ -20,10 +19,8 @@ const sudokuClass = style({
 const redClass = style({ color: "red" });
 
 export function renderSudoku(fieldData: Grid): VNode {
-  const rawData = fieldData.map(d => d.value);
-
   const cells = fieldData.map((cell, idx) => {
-    return renderGridCell(cell, idx, rawData);
+    return renderGridCell(cell, idx);
   });
 
   return div(`.${sudokuClass}`, cells);
@@ -31,14 +28,13 @@ export function renderSudoku(fieldData: Grid): VNode {
 
 function renderGridCell(
   cell: CellDetails,
-  idx: number,
-  rawData: FieldData
+  idx: number
 ): VNode {
   let cssClass = `.${cellClass}`;
   if (
     !cell.initialValue &&
     cell.value &&
-    !isValidValue(cell.value, idx, rawData)
+    cell.isWrong
   ) {
     cssClass += ` .${redClass}`;
   }

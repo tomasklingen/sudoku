@@ -1,5 +1,5 @@
 import { DOMSource } from "@cycle/dom";
-import { Grid } from "./datatypes";
+import { Grid, CellDetails } from "./datatypes";
 import { renderSudoku } from "./renderer";
 import { isValidValue } from "./validation";
 
@@ -22,8 +22,9 @@ function createRandomSudokuData(prefills: number): Grid {
   return cells.map(value => {
     return {
       value,
-      initialValue: true
-    };
+      initialValue: true,
+      isWrong: false
+    } as CellDetails;
   });
 }
 
