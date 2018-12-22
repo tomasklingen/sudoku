@@ -1,51 +1,84 @@
 import { FieldData } from "./datatypes";
 
-// standard 9*9 sudoku grid
+interface ValidResult {
+  isValid: true;
+}
+interface InvalidResult {
+  isValid: false;
+  errors: SudokuError;
+}
+
+export type ValidationResult = ValidResult | InvalidResult;
+
+export enum SudokuError {
+  NoError = 0,
+  SameRow = 1 << 0,
+  SameCol = 1 << 1,
+  SameRegion = 1 << 2
+}
 
 type Position = { row: number; col: number };
 
-export const isValidValue = (
-  value: number,
-  index: number,
-  field: FieldData
-) => {
-  const pos = indexToPosition(index);
+export class SudokuValidator {
+  private readonly positionInField: (index: number) => Position;
 
-  return !(
-    valueExistsInSameRow(value, pos.row, field) &&
-    valueExistsInSameCol(value, pos.col, field) &&
-    valueExistsInSameRegion(value, pos, field)
-  );
-};
+  constructor(private readonly field: FieldData) {
+    const size = Math.sqrt(field.length);
 
-const valueExistsInSameRegion = (
-  value: number,
-  pos: Position,
-  field: FieldData
-) => {
-  // todo
-  return false;
-};
+    if (size % 1 !== 0) {
+      throw new Error("Field is of uneven size.");
+    }
 
-const valueExistsInSameRow = (value: number, row: number, field: FieldData) => {
-  const rowRange = getRowRangeFromField(row, field);
-  return rowRange.includes(value);
-};
+    this.positionInField = (index: number): Position => ({
+      row: Math.floor(index / size),
+      col: index % size
+    });
+  }
 
-const valueExistsInSameCol = (value: number, col: number, field: FieldData) => {
-  const colRange = getColRangeFromField(col, field);
-  return colRange.includes(value);
-};
+  isValidValue = (value: number, index: number): ValidationResult => {
+    if (this.field[index] === value) {
+      return {
+        isValid: true
+      };
+    }
 
-const getRowRangeFromField = (row: number, field: FieldData) => {
-  return field.filter((_, idx) => row === indexToPosition(idx).row);
-};
+    const pos = this.positionInField(index);
 
-const getColRangeFromField = (col: number, field: FieldData) => {
-  return field.filter((_, idx) => col === indexToPosition(idx).col);
-};
+    let error: SudokuError = SudokuError.NoError;
 
-const indexToPosition = (index: number): Position => ({
-  row: Math.floor(index / 9),
-  col: index % 9
-});
+    if (this.valueExistsInSameRow(value, pos.row)) {
+      error |= SudokuError.SameRow;
+    }
+    if (this.valueExistsInSameCol(value, pos.col)) {
+      error |= SudokuError.SameCol;
+    }
+    if (this.valueExistsInSameRegion(value, pos)) {
+      error |= SudokuError.SameRegion;
+    }
+
+    if (error) {
+      return {
+        isValid: false,
+        errors: error
+      };
+    } else {
+      return { isValid: true };
+    }
+  };
+
+  private valueExistsInSameRegion = (value: number, pos: Position) => {
+    return false;
+  };
+
+  private valueExistsInSameRow = (value: number, row: number) => {
+    return this.field
+      .filter((_, index) => row === this.positionInField(index).row)
+      .includes(value);
+  };
+
+  private valueExistsInSameCol = (value: number, col: number) => {
+    return this.field
+      .filter((_, index) => col === this.positionInField(index).col)
+      .includes(value);
+  };
+}
