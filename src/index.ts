@@ -2,12 +2,18 @@ import { makeDOMDriver } from "@cycle/dom";
 import { normalize, setupPage } from "csstips";
 import { App } from "./app";
 import { run } from "@cycle/run";
+import { cssRule } from "typestyle";
+
+const appElSelector = "#app";
 
 normalize();
-setupPage("#app");
+setupPage(appElSelector);
 
-const drivers = {
-  DOM: makeDOMDriver("#app")
-};
+cssRule(appElSelector, {
+  display: "flex",
+  justifyContent: "center"
+});
 
-run(App, drivers);
+run(App, {
+  dom: makeDOMDriver(appElSelector)
+});

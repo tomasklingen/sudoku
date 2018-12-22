@@ -1,14 +1,14 @@
 import { div, span, VNode } from "@cycle/dom";
-import { style, cssRule } from "typestyle";
-import { CellDetails } from "./datatypes";
+import { style } from "typestyle";
+import { ValidatedCell } from "./datatypes";
 
-export const renderSudoku = (fieldData: CellDetails[]): VNode => {
+export const renderSudoku = (fieldData: ValidatedCell[]): VNode => {
   const cellNodes = fieldData.map(renderGridCell);
 
-  return div(`.${sudokuClass}`, cellNodes);
+  return div([div(`.${sudokuClass}`, cellNodes)]);
 };
 
-const renderGridCell = (cell: CellDetails): VNode => {
+const renderGridCell = (cell: ValidatedCell): VNode => {
   let cssClass = `.${cellClass}`;
   if (cell.value && !cell.isValid) {
     cssClass += ` .${redClass}`;
@@ -34,8 +34,3 @@ const sudokuClass = style({
 });
 
 const redClass = style({ color: "red" });
-
-cssRule("#app", {
-  display: 'flex',
-  justifyContent: 'center'
-});
