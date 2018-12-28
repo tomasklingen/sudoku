@@ -1,9 +1,9 @@
 import { DOMSource, VNode } from "@cycle/dom";
-import { renderSudoku } from "./renderer";
-import { createSudokuGrid } from "./sudoku";
 import { Stream } from "xstream";
 import { CellDetails, ValidatedCell } from "./datatypes";
-import { SudokuValidator } from "./validation";
+import { renderSudoku } from "./renderer";
+import { createSudokuGrid } from "./sudoku";
+import { createClassicSudokuValidator } from "./validation/sudoku-validator";
 
 export interface Sinks {
   dom: Stream<VNode>;
@@ -13,8 +13,9 @@ export interface Sources {
   dom: DOMSource;
 }
 
-const checkGrid = (grid: CellDetails[]): ValidatedCell[] => {
-  const validator = new SudokuValidator(grid.map(c => c.value));
+const validateGrid = (grid: CellDetails[]): ValidatedCell[] => {
+  const field = grid.map(c => c.value);
+  const validator = createClassicSudokuValidator(field);
 
   return grid.map<ValidatedCell>((cell: CellDetails, index: number) => {
     const isValid = !!cell.value && validator.isValidValue(cell.value, index).isValid;
@@ -32,7 +33,7 @@ export const App = (sources: Sources): Sinks => {
     .startWith(1)
     .map(() => {
       const grid = createSudokuGrid(10);
-      const checkedGrid = checkGrid(grid);
+      const checkedGrid = validateGrid(grid);
       return renderSudoku(checkedGrid);
     });
 

@@ -1,10 +1,13 @@
 import { FieldData } from "../src/datatypes";
-import { SudokuError, SudokuValidator, ValidationResult } from "../src/validation";
+import { SudokuValidator, SudokuError, ValidationResult } from "../src/validation/sudoku-validator";
+import { RegionValidator } from "../src/validation/sudoku-region-validation";
 
 describe("validation", () => {
+  const mockRegionValidator: RegionValidator = () => false;
+
   it("should mark the value that already exists as valid", () => {
     const field: FieldData = [1, 0, 0, 0];
-    const validator = new SudokuValidator(field);
+    const validator = new SudokuValidator(field, mockRegionValidator);
 
     const result = validator.isValidValue(1, 0).isValid;
 
@@ -16,7 +19,7 @@ describe("validation", () => {
 
     beforeEach(() => {
       const field: FieldData = [1, 0, 0, 0];
-      const validator = new SudokuValidator(field);
+      const validator = new SudokuValidator(field, mockRegionValidator);
 
       result = validator.isValidValue(1, 1);
     });
@@ -36,7 +39,7 @@ describe("validation", () => {
 
     beforeEach(() => {
       const field: FieldData = [1, 0, 0, 0];
-      const validator = new SudokuValidator(field);
+      const validator = new SudokuValidator(field, mockRegionValidator);
 
       result = validator.isValidValue(1, 2);
     });
@@ -52,9 +55,9 @@ describe("validation", () => {
   });
 
   describe("combination violation", () => {
-    it("should retun a combination of error flags to indicate multiple violations", () => {
+    it("should return a combination of error flags to indicate multiple violations", () => {
       const field: FieldData = [1, 0, 0, 1];
-      const validator = new SudokuValidator(field);
+      const validator = new SudokuValidator(field, mockRegionValidator);
       const result = validator.isValidValue(1, 1);
 
       if (result.isValid === true) {

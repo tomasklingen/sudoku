@@ -1,30 +1,33 @@
-import { FieldData, CellDetails, ValidatedCell } from "./datatypes";
-import { SudokuValidator } from "./validation";
+import { CellDetails, FieldData } from "./datatypes";
+import { createClassicSudokuValidator } from "./validation/sudoku-validator";
 
 /**
  * Creates a Sudoku grid object.
  * @param numPrefilledCells Number of random cells to be randomly generated and filled.
  */
 export const createSudokuGrid = (numPrefilledCells = 0): CellDetails[] => {
-  let maxTries = 1000;
-  const cells: FieldData = [...Array(81)].fill(undefined);
-  let validator = new SudokuValidator(cells);
+  let maxTries = 5000;
+  const fieldData: FieldData = [...Array(81)].fill(undefined);
+  const freeCells = new Set(fieldData.map((_, i) => i));
+  let validator = createClassicSudokuValidator(fieldData);
 
   while (numPrefilledCells > 0 && --maxTries > 0) {
     const value = Math.ceil(Math.random() * 9);
-    const randomIndex = Math.floor(Math.random() * 81);
+    const randomIndex = Array.from(freeCells)[
+      Math.floor(Math.random() * freeCells.size)
+    ];
 
-    if (
-      cells[randomIndex] === undefined &&
-      validator.isValidValue(value, randomIndex).isValid
-    ) {
-      cells[randomIndex] = value;
+    if (validator.isValidValue(value, randomIndex).isValid) {
+      fieldData[randomIndex] = value;
+      freeCells.delete(randomIndex);
       numPrefilledCells--;
-      validator = new SudokuValidator(cells);
+      validator = createClassicSudokuValidator(fieldData);
     }
   }
 
-  return cells.map(value => {
+  console.log(Array.from(freeCells));
+
+  return fieldData.map(value => {
     return {
       value,
       isInitialValue: !!value
