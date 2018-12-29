@@ -41,6 +41,9 @@ export class SudokuValidator {
   private readonly indexToCol: (index: number) => number;
   private readonly valueExistsInSameRegion: RegionValidator;
 
+  public static isValidSudokuValue = (v: number) =>
+    v >= 0 && v <= 9 && Math.floor(v) === v;
+
   constructor(
     private readonly field: FieldData,
     readonly regionValidator: RegionValidator
@@ -49,6 +52,12 @@ export class SudokuValidator {
 
     if (size % 1 !== 0) {
       throw new Error("Field is of uneven size.");
+    }
+
+    if (!field.every(SudokuValidator.isValidSudokuValue)) {
+      throw new Error(
+        "Invalid values in field, all values must be numbers between 0-9"
+      );
     }
 
     this.indexToRow = (index: number) => Math.floor(index / size);
@@ -61,6 +70,10 @@ export class SudokuValidator {
       return {
         isValid: true
       };
+    }
+
+    if (value < 1 || value > 9) {
+      throw new Error("value outside of 1-9 range");
     }
 
     let error: SudokuError = SudokuError.NoError;

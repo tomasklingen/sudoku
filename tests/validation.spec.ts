@@ -1,5 +1,9 @@
 import { FieldData } from "../src/datatypes";
-import { SudokuValidator, SudokuError, ValidationResult } from "../src/validation/sudoku-validator";
+import {
+  SudokuValidator,
+  SudokuError,
+  ValidationResult
+} from "../src/validation/sudoku-validator";
 import { RegionValidator } from "../src/validation/sudoku-region-validation";
 
 describe("validation", () => {
@@ -12,6 +16,26 @@ describe("validation", () => {
     const result = validator.isValidValue(1, 0).isValid;
 
     expect(result).toBe(true);
+  });
+
+  it("should only allow valid numbers from 0 to 9 to be validated", () => {
+    // negative number
+    const invalidField: FieldData = [-1, 0, 0, 0];
+    expect(() => {
+      new SudokuValidator(invalidField, mockRegionValidator);
+    }).toThrow();
+
+    // float
+    const invalidField2: FieldData = [1.1, 0, 0, 0];
+    expect(() => {
+      new SudokuValidator(invalidField2, mockRegionValidator);
+    }).toThrow();
+
+    // valid field
+    const validField: FieldData = [1, 0, 0, 0];
+    expect(() => {
+      new SudokuValidator(validField, mockRegionValidator);
+    }).not.toThrow();
   });
 
   describe("same row violation", () => {
@@ -51,6 +75,22 @@ describe("validation", () => {
       }
 
       expect(result.errors).toBe(SudokuError.SameCol);
+    });
+  });
+
+  describe("region violation", () => {
+    it("should return an error if the value already exists in the same region", () => {
+      const field: FieldData = [0, 0, 0, 0];
+      const regionValidator: RegionValidator = () => true;
+      const validator = new SudokuValidator(field, regionValidator);
+      const result = validator.isValidValue(1, 1);
+
+      if (result.isValid === true) {
+        fail();
+        return;
+      }
+
+      expect(result.errors).toBe(SudokuError.SameRegion);
     });
   });
 

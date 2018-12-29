@@ -29,7 +29,7 @@ export function deserializeGrid(input: string): CellDetails[] {
       const value =
         previousChar && previousChar !== " "
           ? parseInt(previousChar)
-          : undefined;
+          : 0;
 
       output.push({
         isInitialValue: char === INITIAL_VALUE_CHAR,

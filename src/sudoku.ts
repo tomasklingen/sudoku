@@ -7,7 +7,7 @@ import { createClassicSudokuValidator } from "./validation/sudoku-validator";
  */
 export const createSudokuGrid = (numPrefilledCells = 0): CellDetails[] => {
   let maxTries = 5000;
-  const fieldData: FieldData = [...Array(81)].fill(undefined);
+  const fieldData: FieldData = [...Array(81)].fill(0);
   const freeCells = new Set(fieldData.map((_, i) => i));
   let validator = createClassicSudokuValidator(fieldData);
 
@@ -24,8 +24,6 @@ export const createSudokuGrid = (numPrefilledCells = 0): CellDetails[] => {
       validator = createClassicSudokuValidator(fieldData);
     }
   }
-
-  console.log(Array.from(freeCells));
 
   return fieldData.map(value => {
     return {

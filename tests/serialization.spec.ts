@@ -4,7 +4,7 @@ import { deserializeGrid, serializeGrid } from "../src/serialization";
 
 describe("serialization", () => {
   it("should serialize empty values ", () => {
-    const grid: CellDetails[] = [{ value: undefined, isInitialValue: false }];
+    const grid: CellDetails[] = [{ value: 0, isInitialValue: false }];
     const output = serializeGrid(grid);
     expect(output).toBe(" -");
   });
@@ -42,7 +42,7 @@ describe("deserialization", () => {
 
     const result = deserializeGrid(input);
     expect(result).toEqual([
-      { value: undefined, isInitialValue: false } as CellDetails
+      { value: 0, isInitialValue: false } as CellDetails
     ]);
   });
 });
